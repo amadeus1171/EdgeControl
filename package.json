@@ -1,0 +1,35 @@
+{
+  "name": "edge-control-mcp",
+  "version": "0.1.0",
+  "description": "Claude Code MCP server for Microsoft Edge browser control via CDP",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "edge-control-mcp": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js"
+  },
+  "keywords": [
+    "mcp",
+    "edge",
+    "cdp",
+    "claude-code",
+    "browser"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "chrome-remote-interface": "^0.34.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.2",
+    "typescript": "^6.0.2"
+  }
+}
