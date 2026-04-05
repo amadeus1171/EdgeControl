@@ -6,6 +6,7 @@ import { registerTabTools } from "./tools/tab.js";
 import { registerPageTools } from "./tools/page.js";
 import { registerInteractTools } from "./tools/interact.js";
 import { registerNavigateTools } from "./tools/navigate.js";
+import { registerObserveTools } from "./tools/observe.js";
 
 const server = new McpServer(
   { name: "edge-control", version: "0.1.0" },
@@ -16,6 +17,7 @@ registerTabTools(server);
 registerPageTools(server);
 registerInteractTools(server);
 registerNavigateTools(server);
+registerObserveTools(server);
 
 async function main(): Promise<void> {
   const transport = new StdioServerTransport();
