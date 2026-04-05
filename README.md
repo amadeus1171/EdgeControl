@@ -24,7 +24,7 @@ This creates an **"Edge (Debug)"** shortcut on your Desktop that launches Edge w
 
 ### 2. Add to Claude Code
 
-Add to your `.claude/settings.json`:
+Add to your `.claude/.mcp.json` (create if it doesn't exist):
 
 ```json
 {
