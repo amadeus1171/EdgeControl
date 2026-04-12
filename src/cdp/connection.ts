@@ -17,6 +17,7 @@ class ConnectionManager {
   private client: Client | null = null;
   private currentTabId: string | null = null;
   private heartbeatTimer: ReturnType<typeof setInterval> | null = null;
+  private pendingDialog: { type: string; message: string; defaultPrompt?: string } | null = null;
   private consoleMessages: Array<{ level: string; text: string; timestamp: number }> = [];
   private networkRequests: Array<{
     requestId: string;
@@ -70,6 +71,11 @@ class ConnectionManager {
 
     this.consoleMessages = [];
     this.networkRequests = [];
+    this.pendingDialog = null;
+
+    Page.javascriptDialogOpening((params: { type: string; message: string; defaultPrompt?: string }) => {
+      this.pendingDialog = { type: params.type, message: params.message, defaultPrompt: params.defaultPrompt };
+    });
 
     Runtime.consoleAPICalled((params) => {
       const text = params.args
@@ -219,6 +225,30 @@ class ConnectionManager {
       title: tab?.title ?? "unknown",
       url: tab?.url ?? "unknown",
     };
+  }
+
+  async openNewTab(url?: string): Promise<TabInfo> {
+    const client = await this.ensureConnected();
+    const result = await (client as any).Target.createTarget({ url: url ?? "about:blank" });
+    const newTabId: string = result.targetId;
+    return this.activateTab(newTabId);
+  }
+
+  async closeTab(tabId: string): Promise<void> {
+    const client = await this.ensureConnected();
+    await (client as any).Target.closeTarget({ targetId: tabId });
+    if (this.currentTabId === tabId) {
+      this.cleanup();
+      await this.connect();
+    }
+  }
+
+  getPendingDialog(): { type: string; message: string; defaultPrompt?: string } | null {
+    return this.pendingDialog;
+  }
+
+  clearPendingDialog(): void {
+    this.pendingDialog = null;
   }
 
   getCurrentTabId(): string | null {

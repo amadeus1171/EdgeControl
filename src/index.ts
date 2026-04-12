@@ -7,6 +7,10 @@ import { registerPageTools } from "./tools/page.js";
 import { registerInteractTools } from "./tools/interact.js";
 import { registerNavigateTools } from "./tools/navigate.js";
 import { registerObserveTools } from "./tools/observe.js";
+import { registerEmulateTools } from "./tools/emulate.js";
+import { registerStorageTools } from "./tools/storage.js";
+import { registerDialogTools } from "./tools/dialog.js";
+import { registerDomTools } from "./tools/dom.js";
 
 const server = new McpServer(
   { name: "edge-control", version: "0.1.0" },
@@ -18,6 +22,10 @@ registerPageTools(server);
 registerInteractTools(server);
 registerNavigateTools(server);
 registerObserveTools(server);
+registerEmulateTools(server);
+registerStorageTools(server);
+registerDialogTools(server);
+registerDomTools(server);
 
 async function main(): Promise<void> {
   const transport = new StdioServerTransport();

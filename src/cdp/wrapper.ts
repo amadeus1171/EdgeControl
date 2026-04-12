@@ -143,6 +143,58 @@ export async function getAccessibilityTree(
   return lines.join("\n");
 }
 
+export async function dispatchRightClick(x: number, y: number): Promise<void> {
+  const client = await connectionManager.ensureConnected();
+  const { Input } = client;
+  await Input.dispatchMouseEvent({
+    type: "mousePressed",
+    x,
+    y,
+    button: "right",
+    clickCount: 1,
+  });
+  await Input.dispatchMouseEvent({
+    type: "mouseReleased",
+    x,
+    y,
+    button: "right",
+    clickCount: 1,
+  });
+}
+
+export async function dispatchDoubleClick(x: number, y: number): Promise<void> {
+  const client = await connectionManager.ensureConnected();
+  const { Input } = client;
+  await Input.dispatchMouseEvent({
+    type: "mousePressed",
+    x,
+    y,
+    button: "left",
+    clickCount: 1,
+  });
+  await Input.dispatchMouseEvent({
+    type: "mouseReleased",
+    x,
+    y,
+    button: "left",
+    clickCount: 1,
+  });
+  await Input.dispatchMouseEvent({
+    type: "mousePressed",
+    x,
+    y,
+    button: "left",
+    clickCount: 2,
+  });
+  await Input.dispatchMouseEvent({
+    type: "mouseReleased",
+    x,
+    y,
+    button: "left",
+    clickCount: 2,
+  });
+}
+
 export async function dispatchScroll(
   x: number,
   y: number,

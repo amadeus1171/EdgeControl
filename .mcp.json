@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "edge-control": {
+      "command": "node",
+      "args": ["C:/Users/amade/PycharmProjects/EdgeControl/dist/index.js"]
+    }
+  }
+}

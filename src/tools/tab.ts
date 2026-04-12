@@ -79,6 +79,79 @@ export function registerTabTools(server: McpServer): void {
   );
 
   server.registerTool(
+    "new_tab",
+    {
+      title: "New Tab",
+      description:
+        "Open a new browser tab. Optionally navigate to a URL.",
+      inputSchema: z.object({
+        url: z
+          .string()
+          .optional()
+          .describe("URL to open in the new tab (default: about:blank)"),
+      }),
+    },
+    async ({ url }) => {
+      try {
+        const tab = await connectionManager.openNewTab(url);
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text: `New tab opened: ${tab.title}\nURL: ${tab.url}\nID: ${tab.id}`,
+            },
+          ],
+        };
+      } catch (err) {
+        return {
+          isError: true,
+          content: [
+            {
+              type: "text" as const,
+              text: err instanceof Error ? err.message : String(err),
+            },
+          ],
+        };
+      }
+    }
+  );
+
+  server.registerTool(
+    "close_tab",
+    {
+      title: "Close Tab",
+      description:
+        "Close a browser tab by its ID. Use list_tabs to find tab IDs.",
+      inputSchema: z.object({
+        tabId: z.string().describe("The tab ID to close"),
+      }),
+    },
+    async ({ tabId }) => {
+      try {
+        await connectionManager.closeTab(tabId);
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text: `Closed tab: ${tabId}`,
+            },
+          ],
+        };
+      } catch (err) {
+        return {
+          isError: true,
+          content: [
+            {
+              type: "text" as const,
+              text: err instanceof Error ? err.message : String(err),
+            },
+          ],
+        };
+      }
+    }
+  );
+
+  server.registerTool(
     "activate_tab",
     {
       title: "Activate Tab",
