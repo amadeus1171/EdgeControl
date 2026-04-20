@@ -2,3 +2,4 @@ node_modules/
 dist/
 *.db
 claude_code_context/
+state.json

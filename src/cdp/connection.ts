@@ -1,5 +1,10 @@
 import CDP from "chrome-remote-interface";
 import type { Client } from "chrome-remote-interface";
+import { writeFileSync } from "fs";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+
+const STATE_FILE = join(dirname(fileURLToPath(import.meta.url)), "../../state.json");
 
 const CDP_PORT = 9222;
 const CDP_HOST = "127.0.0.1";
@@ -52,6 +57,7 @@ class ConnectionManager {
     const target = pageTargets[0];
     this.client = await CDP({ host: CDP_HOST, port: CDP_PORT, target: target.id });
     this.currentTabId = target.id;
+    this.writeStateFile({ id: target.id, title: target.title ?? "", url: target.url ?? "" });
 
     await this.enableDomains();
     this.setupDisconnectHandler();
@@ -220,11 +226,13 @@ class ConnectionManager {
 
     const targets = await CDP.List({ host: CDP_HOST, port: CDP_PORT });
     const tab = targets.find((t) => t.id === tabId);
-    return {
+    const result: TabInfo = {
       id: tabId,
       title: tab?.title ?? "unknown",
       url: tab?.url ?? "unknown",
     };
+    this.writeStateFile(result);
+    return result;
   }
 
   async openNewTab(url?: string): Promise<TabInfo> {
@@ -240,6 +248,19 @@ class ConnectionManager {
     if (this.currentTabId === tabId) {
       this.cleanup();
       await this.connect();
+    }
+  }
+
+  private writeStateFile(tab: TabInfo): void {
+    try {
+      writeFileSync(STATE_FILE, JSON.stringify({
+        tabId: tab.id,
+        title: tab.title,
+        url: tab.url,
+        updatedAt: new Date().toISOString(),
+      }, null, 2));
+    } catch {
+      // non-fatal — state file is best-effort
     }
   }
 
