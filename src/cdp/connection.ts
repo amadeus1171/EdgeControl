@@ -1,9 +1,10 @@
 import CDP from "chrome-remote-interface";
 import type { Client } from "chrome-remote-interface";
-import { writeFileSync } from "fs";
+import { writeFile } from "fs/promises";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 
+// Resolves to project root: dist/cdp/connection.js -> ../../ -> project root
 const STATE_FILE = join(dirname(fileURLToPath(import.meta.url)), "../../state.json");
 
 const CDP_PORT = 9222;
@@ -199,7 +200,7 @@ class ConnectionManager {
       const targets = await CDP.List({ host: CDP_HOST, port: CDP_PORT });
       return targets
         .filter((t) => t.type === "page")
-        .map((t) => ({ id: t.id, title: t.title, url: t.url }));
+        .map((t) => ({ id: t.id, title: t.title ?? "unknown", url: t.url ?? "unknown" }));
     } catch {
       throw new Error(
         "Cannot connect to Edge. Launch the Edge (Debug) shortcut first."
@@ -252,16 +253,14 @@ class ConnectionManager {
   }
 
   private writeStateFile(tab: TabInfo): void {
-    try {
-      writeFileSync(STATE_FILE, JSON.stringify({
-        tabId: tab.id,
-        title: tab.title,
-        url: tab.url,
-        updatedAt: new Date().toISOString(),
-      }, null, 2));
-    } catch {
+    writeFile(STATE_FILE, JSON.stringify({
+      tabId: tab.id,
+      title: tab.title,
+      url: tab.url,
+      updatedAt: new Date().toISOString(),
+    }, null, 2)).catch(() => {
       // non-fatal — state file is best-effort
-    }
+    });
   }
 
   getPendingDialog(): { type: string; message: string; defaultPrompt?: string } | null {
