@@ -45,6 +45,10 @@ This creates an **"Edge (Debug)"** shortcut on your Desktop that launches Edge w
 - `--remote-debugging-port=9222`
 - A separate user data directory (isolated from your normal Edge)
 
+The Chrome DevTools Protocol also works with Google Chrome. To control Chrome
+instead, run `scripts/create-chrome-shortcut.ps1` — it creates an equivalent
+**"Chrome (Debug)"** shortcut on the same debug port.
+
 ### 2. Add to Claude Code
 
 Add to your `.claude/.mcp.json` (create if it doesn't exist).

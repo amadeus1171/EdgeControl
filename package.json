@@ -2,6 +2,12 @@
   "name": "edge-control-mcp",
   "version": "0.2.0",
   "description": "Claude Code MCP server for Microsoft Edge browser control via CDP",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amadeus1171/EdgeControl.git"
+  },
+  "homepage": "https://github.com/amadeus1171/EdgeControl#readme",
+  "bugs": "https://github.com/amadeus1171/EdgeControl/issues",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
