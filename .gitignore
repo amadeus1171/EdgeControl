@@ -3,3 +3,11 @@ dist/
 *.db
 claude_code_context/
 state.json
+
+# Machine-local Claude Code config and planning docs
+.claude/settings.local.json
+docs/superpowers/
+
+# Editor / Python caches
+.idea/
+__pycache__/
