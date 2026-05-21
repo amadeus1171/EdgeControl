@@ -10,6 +10,9 @@ Connects to an existing Edge instance with remote debugging enabled. No browser 
 
 ### Option A — from npm (global)
 
+> **Not published to npm yet.** This option will work once the package is
+> released. For now, install from source (Option B).
+
 ```bash
 npm install -g edge-control-mcp
 ```
