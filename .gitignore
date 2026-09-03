@@ -8,6 +8,10 @@ state.json
 .claude/settings.local.json
 docs/superpowers/
 
+# Test output
+coverage/
+.pytest_cache/
+
 # Editor / Python caches
 .idea/
 __pycache__/

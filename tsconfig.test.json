@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    // Type-check only: no emit, so rootDir can widen to cover the test tree.
+    "noEmit": true,
+    "rootDir": ".",
+    "declaration": false,
+    "types": ["node"]
+  },
+  "include": ["src/**/*", "tests/ts/**/*", "vitest.config.ts"]
+}

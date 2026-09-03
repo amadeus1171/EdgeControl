@@ -15,6 +15,11 @@
   },
   "scripts": {
     "build": "tsc",
+    "typecheck": "tsc --noEmit -p tsconfig.test.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:hook": "python -m pytest tests/test_tab_context.py",
     "dev": "tsc --watch",
     "start": "node dist/index.js",
     "postinstall": "node -e \"console.log('\\n\\x1b[36medge-control-mcp installed.\\x1b[0m\\n\\nTo create the Edge (Debug) shortcut, run:\\n  powershell -ExecutionPolicy Bypass -File node_modules/edge-control-mcp/scripts/create-shortcut.ps1\\n\\nOr if installed globally:\\n  powershell -ExecutionPolicy Bypass -File \\\"' + require('path').join(__dirname, 'scripts', 'create-shortcut.ps1') + '\\\"\\n')\""
@@ -38,6 +43,8 @@
   "devDependencies": {
     "@types/chrome-remote-interface": "^0.33.0",
     "@types/node": "^25.5.2",
-    "typescript": "^6.0.2"
+    "@vitest/coverage-v8": "^4.1.11",
+    "typescript": "^6.0.2",
+    "vitest": "^4.1.11"
   }
 }
