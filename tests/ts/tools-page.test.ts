@@ -120,16 +120,55 @@ describe("full_page_screenshot", () => {
     expect(result.isError).toBe(true);
   });
 
-  it("leaves the metrics override in place when the capture throws", async () => {
-    // Documents current behaviour: the restore is not in a finally block, so a
-    // failed capture leaves the viewport overridden.
+  it("restores the viewport when the capture throws", async () => {
+    // Without this, a failed capture would leave the viewport overridden at the
+    // full scroll height and every later screenshot would be the wrong size.
     evaluatesTo(h.fake, JSON.stringify({ w: 800, h: 600 }));
     h.fake.client.Page.captureScreenshot.mockRejectedValue(new Error("boom"));
 
     const result = await h.server.call("full_page_screenshot");
 
     expect(result.isError).toBe(true);
-    expect(h.fake.client.Emulation.clearDeviceMetricsOverride).not.toHaveBeenCalled();
+    expect(text(result)).toBe("boom");
+    expect(h.fake.client.Emulation.clearDeviceMetricsOverride).toHaveBeenCalled();
+  });
+
+  it("reports the capture error, not the restore error, when both fail", async () => {
+    evaluatesTo(h.fake, JSON.stringify({ w: 800, h: 600 }));
+    h.fake.client.Page.captureScreenshot.mockRejectedValue(new Error("capture failed"));
+    h.fake.client.Emulation.clearDeviceMetricsOverride.mockRejectedValue(
+      new Error("restore failed")
+    );
+
+    const result = await h.server.call("full_page_screenshot");
+
+    expect(result.isError).toBe(true);
+    expect(text(result)).toBe("capture failed");
+  });
+
+  it("surfaces a restore failure when the capture itself succeeded", async () => {
+    evaluatesTo(h.fake, JSON.stringify({ w: 800, h: 600 }));
+    h.fake.client.Emulation.clearDeviceMetricsOverride.mockRejectedValue(
+      new Error("restore failed")
+    );
+
+    const result = await h.server.call("full_page_screenshot");
+
+    expect(result.isError).toBe(true);
+    expect(text(result)).toBe("restore failed");
+  });
+
+  it("leaves no override behind across a failure and a later success", async () => {
+    evaluatesTo(h.fake, JSON.stringify({ w: 800, h: 600 }));
+    h.fake.client.Page.captureScreenshot.mockRejectedValueOnce(new Error("boom"));
+
+    await h.server.call("full_page_screenshot");
+    const second = await h.server.call("full_page_screenshot");
+
+    expect(second.isError).toBeUndefined();
+    // Both runs set an override, and both cleared it.
+    expect(h.fake.client.Emulation.setDeviceMetricsOverride).toHaveBeenCalledTimes(2);
+    expect(h.fake.client.Emulation.clearDeviceMetricsOverride).toHaveBeenCalledTimes(2);
   });
 });
 

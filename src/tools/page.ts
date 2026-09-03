@@ -155,7 +155,16 @@ export function registerPageTools(server: McpServer): void {
           deviceScaleFactor: 1,
           mobile: false,
         });
-        const data = await captureScreenshot();
+        let data: string;
+        try {
+          data = await captureScreenshot();
+        } catch (captureErr) {
+          // Restore the viewport before propagating. Leaving the override in
+          // place would make every later screenshot the wrong size. The restore
+          // is best-effort here so it cannot mask the original capture error.
+          await (client as any).Emulation.clearDeviceMetricsOverride().catch(() => {});
+          throw captureErr;
+        }
         await (client as any).Emulation.clearDeviceMetricsOverride();
         return {
           content: [
