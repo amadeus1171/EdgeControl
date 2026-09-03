@@ -194,6 +194,35 @@ The hook makes a single HTTP GET to the CDP endpoint and completes in well under
 
 The server connects to Edge's CDP endpoint at `localhost:9222` on the first tool call (lazy connection). It auto-detects the active tab and maintains a persistent WebSocket connection with heartbeat monitoring and automatic reconnection.
 
+## Development
+
+```bash
+npm install
+npm run build          # compile to dist/
+npm run typecheck      # type-check src and tests, no emit
+npm test               # TypeScript unit tests (vitest)
+npm run test:watch     # the same, in watch mode
+npm run test:coverage  # with a coverage report; 80% minimum on every metric
+npm run test:hook      # Python tests for the tab context hook (needs pytest)
+```
+
+### Tests
+
+`tests/ts/` covers the TypeScript server and `tests/test_tab_context.py` covers
+the Python hook.
+
+The tests run against a fake `chrome-remote-interface` rather than a live
+browser, so no Edge instance is needed and the suite runs in a few seconds.
+`tests/ts/helpers/fake-cdp.ts` stands in for the CDP client, and
+`tests/ts/helpers/harness.ts` captures what each module registers so a tool
+handler can be invoked directly. Everything between the tool boundary and that
+seam — selector resolution, coordinate math, CDP call sequencing, output
+formatting, error handling — runs for real.
+
+Because the connection manager is a module-level singleton holding a live
+client and timers, each test loads a fresh copy via `loadHarness()`; do not
+hoist it into a shared fixture.
+
 ## Requirements
 
 - Node.js >= 18
